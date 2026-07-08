@@ -19,6 +19,8 @@ substitutions:
   _UPSTREAM_SERVICE_NAME: my-upstream-service
   _UPSTREAM_URL: "" # operator override; leave empty to auto-discover
 
+serviceAccount: projects/${PROJECT_ID}/serviceAccounts/${_BUILD_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
+
 steps:
   - id: discover-upstream-url
     name: gcr.io/cloud-builders/gcloud
@@ -76,7 +78,7 @@ steps:
           --source="/workspace/.deploy/my-service" \
           --region="${_REGION}" \
           --service-account="${_RUNTIME_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
-          --build-service-account="projects/${PROJECT_ID}/serviceAccounts/${_BUILD_SERVICE_ACCOUNT}" \
+          --build-service-account="projects/${PROJECT_ID}/serviceAccounts/${_BUILD_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
           --no-allow-unauthenticated \
           --update-env-vars="PYTHONPATH=packages:." \
           --update-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \

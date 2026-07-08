@@ -18,3 +18,10 @@
 - Files modified: .gitignore
 - Summary: Made the .DS_Store ignore rule explicit for all directory depths.
 - Verification: git check-ignore -v .DS_Store; git check-ignore -v skills/harness-protocol/.DS_Store; git check-ignore -v skills/gcp-project-scaffold/reference/.DS_Store; git ls-files -- '*.DS_Store'; rg -n '!.*DS_Store|DS_Store' -uu -g '.gitignore' -g 'exclude' . .git/info
+
+## 2026-07-08 15:12:20 - COMPLETED_WITH_WARNINGS
+- Plan: none
+- Files modified: skills/gcp-project-scaffold/SKILL.md, skills/gcp-project-scaffold/reference/cloudbuild-service.yaml, skills/gcp-project-scaffold/reference/cloudbuild-job.yaml, skills/gcp-project-scaffold/reference/create-triggers.sh
+- Summary: Added first-deploy Cloud Run lessons from the retrospective to the GCP project scaffold and aligned Cloud Build templates with v2 GitHub connections, pinned build identities, staged-context checks, rerun guidance, auth assertions, and secret handling.
+- Verification: bash -n skills/gcp-project-scaffold/reference/create-triggers.sh; Ruby YAML parse for Cloud Build templates; Ruby frontmatter validation for SKILL.md; git diff --check; gcloud help checked Cloud Build v2 trigger/repository/connection flags.
+- Warning: skill-creator quick_validate.py was attempted but could not run because the active Python environment is missing the yaml module.

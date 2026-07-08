@@ -4,17 +4,19 @@
 # account, so unlike the service template this runs the Buildpacks build as
 # an explicit inline step (`pack build ... --publish`) and then deploys the
 # resulting image. Both steps still run under the SAME outer build SA
-# (pinned via the trigger's --service-account, not per-step here), so there
-# is no split-identity gap.
+# (pinned below and by the trigger), so there is no split-identity gap.
 
 substitutions:
   _REGION: us-central1
   _JOB_NAME: my-job
   _RUNTIME_SERVICE_ACCOUNT: my-job-runtime
+  _BUILD_SERVICE_ACCOUNT: my-build
   _IMAGE_REPO: cloud-run-source-deploy
   _JOB_CPU: "1"
   _JOB_MEMORY: 2Gi
   _JOB_TASK_TIMEOUT: 60m
+
+serviceAccount: projects/${PROJECT_ID}/serviceAccounts/${_BUILD_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
 
 steps:
   - id: prepare-build-context
