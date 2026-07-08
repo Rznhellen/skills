@@ -9,6 +9,9 @@ Use this skill when working in a software repository. Treat the repo as the shar
 
 Core rule: what the agent cannot discover in the repo or through approved tools effectively does not exist. Convert durable knowledge into repository-local docs, scripts, tests, generated references, and plans.
 
+Source note: this protocol is inspired by OpenAI's harness engineering guidance:
+https://openai.com/index/harness-engineering/
+
 ## Universal Scaffold
 
 Use this scaffold for substantial codebases and for repos being prepared for repeated agent work. Do not create empty placeholder files just to satisfy the tree; create the relevant pieces when they contain real guidance.
