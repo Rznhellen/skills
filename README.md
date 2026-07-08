@@ -15,6 +15,8 @@ for templates or commands.
 shared-skills/
 |-- README.md
 `-- skills/
+    |-- change-vscode-color/
+    |   `-- SKILL.md
     |-- gcp-project-scaffold/
     |   |-- SKILL.md
     |   `-- reference/
@@ -26,6 +28,7 @@ shared-skills/
 
 | Skill | Purpose | Key Files |
 |---|---|---|
+| [`skills/change-vscode-color`](skills/change-vscode-color/) | Manual-only workflow for setting workspace-scoped VS Code title bar, status bar, and window border colors without tinting editor content, Activity Bar, Side Bar, panels, or Peacock-managed UI regions. | [`SKILL.md`](skills/change-vscode-color/SKILL.md) |
 | [`skills/harness-protocol`](skills/harness-protocol/) | Repository work loop and harness-engineering protocol for coding agents. Use it at the start of codebase work, after compaction, during handoffs, and when setting up repo-local docs and plans. Inspired by OpenAI's harness engineering article. | [`SKILL.md`](skills/harness-protocol/SKILL.md) |
 | [`skills/gcp-project-scaffold`](skills/gcp-project-scaffold/) | Opinionated GCP Cloud Run project scaffold using Buildpacks, Procfiles, path-scoped Cloud Build pipelines, GCS/Firestore storage boundaries, explicit auth boundaries, and immutable artifact promotion. Includes templates for Cloud Build services/jobs, trigger creation, Procfiles, and stdlib-only Python dependencies. | [`SKILL.md`](skills/gcp-project-scaffold/SKILL.md), [`reference/`](skills/gcp-project-scaffold/reference/) |
 

@@ -25,3 +25,9 @@
 - Summary: Added first-deploy Cloud Run lessons from the retrospective to the GCP project scaffold and aligned Cloud Build templates with v2 GitHub connections, pinned build identities, staged-context checks, rerun guidance, auth assertions, and secret handling.
 - Verification: bash -n skills/gcp-project-scaffold/reference/create-triggers.sh; Ruby YAML parse for Cloud Build templates; Ruby frontmatter validation for SKILL.md; git diff --check; gcloud help checked Cloud Build v2 trigger/repository/connection flags.
 - Warning: skill-creator quick_validate.py was attempted but could not run because the active Python environment is missing the yaml module.
+
+## 2026-07-08 16:23:51 - COMPLETED
+- Plan: none
+- Files modified: README.md, skills/change-vscode-color/SKILL.md
+- Summary: Added the change-vscode-color skill to the repository README and updated its default inactive chrome colors so inactive backgrounds and borders match active colors while inactive text remains darker.
+- Verification: python3 JSON parse of the SKILL.md default key set; rg reference check for change-vscode-color and inactive color keys.
