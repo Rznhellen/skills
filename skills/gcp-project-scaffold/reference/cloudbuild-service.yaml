@@ -1,0 +1,89 @@
+# Template Cloud Build config for a Cloud Run SERVICE, deployed via
+# `gcloud run deploy --source` so the Buildpacks build runs as a Cloud
+# Run-managed inner Cloud Build. Copy this per surface as
+# deploy/cloudbuild.<surface>.yaml and fill in the placeholders.
+#
+# Pattern demonstrated here:
+#   1. auto-discover an upstream service URL this surface depends on
+#   2. stage a MINIMAL build context (this surface + only the shared
+#      packages it imports) into /workspace/.deploy/<surface>
+#   3. deploy with --source against that staged context
+#
+# Delete the discover step if this surface has no upstream dependency.
+
+substitutions:
+  _REGION: us-central1
+  _SERVICE_NAME: my-service
+  _RUNTIME_SERVICE_ACCOUNT: my-service-runtime
+  _BUILD_SERVICE_ACCOUNT: my-build
+  _UPSTREAM_SERVICE_NAME: my-upstream-service
+  _UPSTREAM_URL: "" # operator override; leave empty to auto-discover
+
+steps:
+  - id: discover-upstream-url
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        URL_FILE="/workspace/.upstream_url"
+        if [[ -n "${_UPSTREAM_URL}" ]]; then
+          printf '%s' "${_UPSTREAM_URL}" > "$${URL_FILE}"
+          echo "Using operator-supplied upstream URL: ${_UPSTREAM_URL}"
+          exit 0
+        fi
+        UPSTREAM_URL=$$(gcloud run services describe "${_UPSTREAM_SERVICE_NAME}" \
+          --region="${_REGION}" \
+          --format="value(status.url)" 2>/dev/null || true)
+        if [[ -z "$${UPSTREAM_URL}" ]]; then
+          # Decide per-dependency: hard-fail (exit 1) if this surface is
+          # useless without the upstream, or continue and degrade if the
+          # upstream can reasonably come online later.
+          echo "ERROR: ${_UPSTREAM_SERVICE_NAME} not found in region ${_REGION}." >&2
+          echo "Deploy it first, or pass _UPSTREAM_URL explicitly." >&2
+          exit 1
+        fi
+        printf '%s' "$${UPSTREAM_URL}" > "$${URL_FILE}"
+        echo "Discovered upstream URL: $${UPSTREAM_URL}"
+
+  - id: prepare-build-context
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        CONTEXT_DIR="/workspace/.deploy/my-service"
+        rm -rf "$${CONTEXT_DIR}"
+        mkdir -p "$${CONTEXT_DIR}/packages"
+        cp -R apps/my-service/. "$${CONTEXT_DIR}/"
+        # Only copy the shared packages this surface actually imports.
+        cp -R packages/shared_core "$${CONTEXT_DIR}/packages/"
+        # Pin the interpreter version Buildpacks should use, if the
+        # regional builder doesn't ship your pyproject.toml's minimum.
+        echo "3.13" > "$${CONTEXT_DIR}/.python-version"
+
+  - id: deploy-service
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        UPSTREAM_URL=$$(cat /workspace/.upstream_url)
+        gcloud run deploy "${_SERVICE_NAME}" \
+          --source="/workspace/.deploy/my-service" \
+          --region="${_REGION}" \
+          --service-account="${_RUNTIME_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+          --build-service-account="projects/${PROJECT_ID}/serviceAccounts/${_BUILD_SERVICE_ACCOUNT}" \
+          --no-allow-unauthenticated \
+          --update-env-vars="PYTHONPATH=packages:." \
+          --update-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \
+          --update-env-vars="UPSTREAM_URL=$${UPSTREAM_URL}"
+          # --update-secrets="SOME_TOKEN=some-secret-name:latest"
+          # Use --update-env-vars / --update-secrets, never --set-*, so
+          # operator-managed values survive redeploys.
+
+options:
+  logging: CLOUD_LOGGING_ONLY

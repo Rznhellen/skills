@@ -1,0 +1,62 @@
+# Template Cloud Build config for a Cloud Run JOB.
+#
+# `gcloud run jobs deploy` cannot source-deploy with a custom build service
+# account, so unlike the service template this runs the Buildpacks build as
+# an explicit inline step (`pack build ... --publish`) and then deploys the
+# resulting image. Both steps still run under the SAME outer build SA
+# (pinned via the trigger's --service-account, not per-step here), so there
+# is no split-identity gap.
+
+substitutions:
+  _REGION: us-central1
+  _JOB_NAME: my-job
+  _RUNTIME_SERVICE_ACCOUNT: my-job-runtime
+  _IMAGE_REPO: cloud-run-source-deploy
+  _JOB_CPU: "1"
+  _JOB_MEMORY: 2Gi
+  _JOB_TASK_TIMEOUT: 60m
+
+steps:
+  - id: prepare-build-context
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        CONTEXT_DIR="/workspace/.deploy/my-job"
+        rm -rf "$${CONTEXT_DIR}"
+        mkdir -p "$${CONTEXT_DIR}/packages"
+        cp -R apps/my-job/. "$${CONTEXT_DIR}/"
+        cp -R packages/shared_core "$${CONTEXT_DIR}/packages/"
+        echo "3.13" > "$${CONTEXT_DIR}/.python-version"
+
+  - id: build-job-image
+    name: gcr.io/k8s-skaffold/pack
+    dir: .deploy/my-job
+    args:
+      - build
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_REPO}/${_JOB_NAME}:latest
+      - --builder=gcr.io/buildpacks/builder
+      - --publish
+
+  - id: deploy-job
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        IMAGE_URL="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_REPO}/${_JOB_NAME}:latest"
+        gcloud run jobs deploy "${_JOB_NAME}" \
+          --image="$${IMAGE_URL}" \
+          --region="${_REGION}" \
+          --service-account="${_RUNTIME_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+          --cpu="${_JOB_CPU}" \
+          --memory="${_JOB_MEMORY}" \
+          --task-timeout="${_JOB_TASK_TIMEOUT}" \
+          --update-env-vars="PYTHONPATH=packages:." \
+          --update-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID}"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
