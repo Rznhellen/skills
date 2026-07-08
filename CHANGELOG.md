@@ -31,3 +31,9 @@
 - Files modified: README.md, skills/change-vscode-color/SKILL.md
 - Summary: Added the change-vscode-color skill to the repository README and updated its default inactive chrome colors so inactive backgrounds and borders match active colors while inactive text remains darker.
 - Verification: python3 JSON parse of the SKILL.md default key set; rg reference check for change-vscode-color and inactive color keys.
+
+## 2026-07-08 16:29:11 - COMPLETED
+- Plan: none
+- Files modified: .vscode/settings.json
+- Summary: Added workspace-local VS Code royal blue window chrome colors scoped to title bar, status bar, and window border keys, with inactive backgrounds and borders matching active colors.
+- Verification: python3 -m json.tool .vscode/settings.json; rg final key list confirmed no Activity Bar, Side Bar, panel, editor, or Peacock keys.
