@@ -37,3 +37,21 @@
 - Files modified: .vscode/settings.json
 - Summary: Added workspace-local VS Code royal blue window chrome colors scoped to title bar, status bar, and window border keys, with inactive backgrounds and borders matching active colors.
 - Verification: python3 -m json.tool .vscode/settings.json; rg final key list confirmed no Activity Bar, Side Bar, panel, editor, or Peacock keys.
+
+## 2026-07-22 23:43:48 - COMPLETED
+- Plan: none
+- Files modified: skills/harness-protocol/SKILL.md
+- Summary: Added a bounded, macro-level technical-debt protocol to the repository skill and restored the installed harness-protocol skill to its prior repository-HEAD content.
+- Verification: Ruby YAML frontmatter parse; required-section assertions; installed-skill comparison against repository HEAD; git diff --check.
+
+## 2026-07-22 23:49:39 - COMPLETED
+- Plan: none
+- Files modified: skills/harness-protocol/SKILL.md
+- Summary: Condensed the technical-debt protocol while preserving its audit cadence, macro review criteria, tracker requirements, and remediation thresholds.
+- Verification: Ruby YAML frontmatter parse; required-content assertions; installed-skill comparison against repository HEAD; git diff --check.
+
+## 2026-07-22 23:58:08 - COMPLETED
+- Plan: none
+- Files modified: skills/harness-protocol/SKILL.md
+- Summary: Consolidated the debt audit categories and made the tracker an active-only register whose resolved entries are removed after verified remediation.
+- Verification: Ruby YAML frontmatter parse; active-only tracker assertions; installed-skill comparison against repository HEAD; git diff --check.
