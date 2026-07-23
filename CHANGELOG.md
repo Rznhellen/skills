@@ -38,6 +38,12 @@
 - Summary: Added workspace-local VS Code royal blue window chrome colors scoped to title bar, status bar, and window border keys, with inactive backgrounds and borders matching active colors.
 - Verification: python3 -m json.tool .vscode/settings.json; rg final key list confirmed no Activity Bar, Side Bar, panel, editor, or Peacock keys.
 
+## 2026-07-08 16:31:25 - COMPLETED
+- Plan: none
+- Files modified: .git/info/exclude
+- Summary: Added recursive .DS_Store ignore patterns to the local Git exclude file as a second guard in addition to the root .gitignore rules.
+- Verification: tail -n 12 .git/info/exclude; git check-ignore -v a/b/c/.DS_Store; git ls-files -- '*.DS_Store'
+
 ## 2026-07-22 23:43:48 - COMPLETED
 - Plan: none
 - Files modified: skills/harness-protocol/SKILL.md
