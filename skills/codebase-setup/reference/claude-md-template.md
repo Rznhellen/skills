@@ -42,3 +42,11 @@ See ARCHITECTURE.md for the full domain map.
 - Log friction points to `docs/harness-feedback/` when something is unclear or missing
 - Check `docs/exec-plans/active/` for in-progress work before starting related changes
 - Update this file when your work changes behavior, setup, or conventions
+
+### Skills to invoke proactively
+
+- `/harness-protocol` — read at the start of any session in this repo; sets operating context
+- `/plan` — before non-trivial multi-file work or when trade-offs exist
+- `/code-review` — after completing a change, before considering it done
+- `/documentation-scaffold` — after any change that affects setup, conventions, or public behavior
+- `/architecture-decision` — when choosing between approaches with lasting consequences

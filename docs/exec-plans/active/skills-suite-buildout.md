@@ -452,7 +452,7 @@ Phase 5 (Orchestration)  ─── Week 5-6
 ```
 shared-skills/
 ├── CLAUDE.md                          # NEW: canonical guidance (single source of truth)
-├── AGENTS.md                          # NEW: points to CLAUDE.md
+├── AGENTS.md                          # NEW: symlink → CLAUDE.md
 ├── README.md                          # UPDATE: reflect full suite
 ├── CHANGELOG.md
 ├── docs/
@@ -624,9 +624,8 @@ This repo (194k stars) has strong patterns we should selectively adopt:
 
 **Skip:**
 - Issue tracker integration (triage, to-tickets): over-engineered for our use case
-- Plugin marketplace packaging: we install via `npx skills install 'Rznhellen/<repo>'`
+- Plugin marketplace packaging: we distribute skills by copying into projects
 - Promoted/non-promoted bucket governance: too formal for our repo size
-- Symlink scripts / linking infrastructure: `npx skills install` handles distribution
 
 ---
 
