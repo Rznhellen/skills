@@ -1,77 +1,75 @@
 # Shared Skills
 
-This directory is a small library of reusable agent skills. Each skill packages a
-repeatable workflow, architectural pattern, or operating protocol that can be
-installed into an agent environment and reused across projects.
+A portable agent harness — skills, subagents, and workflows for software factory / harness engineering. Install into any codebase via:
 
-The goal is to keep durable guidance out of one-off chats and put it in files
-agents can rediscover: each skill's `SKILL.md` for agent-facing instructions,
-this root `README.md` for human-facing context, and optional reference assets
-for templates or commands.
+```bash
+npx skills install 'Rznhellen/shared-skills'
+```
+
+Skills follow the [Agent Skills open standard](https://agentskills.io) for cross-tool portability (Claude Code, Cursor, Codex, Gemini CLI, JetBrains Junie).
 
 ## Directory Layout
 
 ```text
 shared-skills/
-|-- README.md
-`-- skills/
-    |-- change-vscode-color/
-    |   `-- SKILL.md
-    |-- gcp-project-scaffold/
-    |   |-- SKILL.md
-    |   `-- reference/
-    `-- harness-protocol/
-        `-- SKILL.md
+├── CLAUDE.md                    # Canonical guidance
+├── AGENTS.md                    # Points to CLAUDE.md
+├── skills/                      # Portable skills (SKILL.md format)
+└── docs/
+    ├── exec-plans/              # Execution plans
+    └── harness-feedback/        # Friction entries for evolution
 ```
 
-## Current Skills
+## Skills
 
-| Skill | Purpose | Key Files |
-|---|---|---|
-| [`skills/change-vscode-color`](skills/change-vscode-color/) | Manual-only workflow for setting workspace-scoped VS Code title bar, status bar, and window border colors without tinting editor content, Activity Bar, Side Bar, panels, or Peacock-managed UI regions. | [`SKILL.md`](skills/change-vscode-color/SKILL.md) |
-| [`skills/harness-protocol`](skills/harness-protocol/) | Repository work loop and harness-engineering protocol for coding agents. Use it at the start of codebase work, after compaction, during handoffs, and when setting up repo-local docs and plans. Inspired by OpenAI's harness engineering article. | [`SKILL.md`](skills/harness-protocol/SKILL.md) |
-| [`skills/gcp-project-scaffold`](skills/gcp-project-scaffold/) | Opinionated GCP Cloud Run project scaffold using Buildpacks, Procfiles, path-scoped Cloud Build pipelines, GCS/Firestore storage boundaries, explicit auth boundaries, and immutable artifact promotion. Includes templates for Cloud Build services/jobs, trigger creation, Procfiles, and stdlib-only Python dependencies. | [`SKILL.md`](skills/gcp-project-scaffold/SKILL.md), [`reference/`](skills/gcp-project-scaffold/reference/) |
+### Foundation
+| Skill | Trigger |
+|-------|---------|
+| [codebase-setup](skills/codebase-setup/) | Bootstrapping a new codebase for agent work |
+| [plan](skills/plan/) | Non-trivial work needing structured planning |
+| [harness-protocol](skills/harness-protocol/) | Working in any software repository |
 
-## Skill Conventions
+### Quality & Verification
+| Skill | Trigger |
+|-------|---------|
+| [test-strategy](skills/test-strategy/) | Deciding how to test a change |
+| [security-review](skills/security-review/) | Security assessment of changes or areas |
+| [code-review](skills/code-review/) | Pre-merge code review |
+| [tech-debt-audit](skills/tech-debt-audit/) | Identifying and recording technical debt |
 
-Each skill directory should be self-contained and should use this structure:
+### Architecture & Design
+| Skill | Trigger |
+|-------|---------|
+| [frontend-design](skills/frontend-design/) | Frontend architecture and design decisions |
+| [architecture-decision](skills/architecture-decision/) | Decisions with trade-offs that future agents need |
+| [gcp-architecture](skills/gcp-architecture/) | Starting a GCP project, choosing surfaces |
+| [gcp-deploy](skills/gcp-deploy/) | First deploy, bootstrap, deploy.sh creation |
+| [gcp-buildpacks](skills/gcp-buildpacks/) | Setting up deployable surfaces with Buildpacks |
+| [gcp-cicd](skills/gcp-cicd/) | Setting up CI/CD, Cloud Build triggers |
+| [gcp-triage](skills/gcp-triage/) | Build/deploy failures, log retrieval |
 
-```text
-skills/<skill-name>/
-|-- SKILL.md
-`-- reference/        # optional templates, scripts, examples, or source docs
-```
+### Operations
+| Skill | Trigger |
+|-------|---------|
+| [harness-evolution](skills/harness-evolution/) | Consolidating feedback into harness improvements |
+| [documentation-scaffold](skills/documentation-scaffold/) | Ongoing documentation maintenance |
+| [release-workflow](skills/release-workflow/) | Release process guidance |
 
-Use `SKILL.md` for the instructions an agent must follow. Keep it direct,
-operational, and specific about when the skill should trigger.
+### Utility
+| Skill | Trigger |
+|-------|---------|
+| [change-vscode-color](skills/change-vscode-color/) | Setting workspace VS Code colors |
 
-Use `reference/` for reusable material the skill points to, such as templates,
-sample configs, scripts, examples, or stable source material. Reference files
-should be named clearly enough that an agent can select only the relevant ones.
+## Design Philosophy
 
-Keep human-facing package context in this root README. Do not add individual
-skill README files unless a skill has unusual external packaging needs that
-cannot be handled here or in `SKILL.md`.
+Skills provide **decision context** (why, when, what good looks like) rather than step-by-step constraints. The new model generation handles nuance; our job is to give it the right map.
 
-## Adding A Skill
+See [docs/exec-plans/active/skills-suite-buildout.md](docs/exec-plans/active/skills-suite-buildout.md) for the full design rationale and implementation plan.
 
-1. Create `skills/<skill-name>/`.
-2. Add `SKILL.md` with frontmatter containing at least `name` and
-   `description`.
-3. Add optional `reference/` files only when they are directly useful to the
-   skill workflow.
-4. Link the new skill in the table above.
+## Adding a Skill
 
-Prefer small, focused skills over broad manuals. A good skill should help an
-agent do a real task with fewer assumptions, clearer source material, and a
-repeatable verification path.
-
-## Maintenance Notes
-
-- Keep this root README as a map, not a full manual.
-- Keep detailed workflow guidance inside the relevant skill's `SKILL.md`.
-- Avoid duplicating long instructions across skills.
-- When renaming or deleting a skill, update links in this README and run a
-  stale-reference search across the directory.
-- Do not store secrets, raw logs, private transcripts, or environment-specific
-  credentials in skill files.
+1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`)
+2. Keep SKILL.md under 100 lines — push detail into `reference/`
+3. Write `description` as a specific trigger condition ("Use when...")
+4. Add optional `reference/` files for templates, specs, or examples
+5. Update this README's skills table

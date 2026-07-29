@@ -1,0 +1,2 @@
+# this service uses only the standard library.
+# this file exists so Cloud Buildpacks detects the project as Python.
