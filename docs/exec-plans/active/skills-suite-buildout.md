@@ -82,9 +82,9 @@ The harness is a living system, not a static document. Agents log friction (miss
 
 ```
 skills/
-├── change-vscode-color/     (utility — small, complete)
-├── gcp-project-scaffold/    (domain — mature, has references)
-└── harness-protocol/        (meta — good foundation, needs modernization)
+├── s-change-vscode-color/     (utility — small, complete)
+├── s-gcp-project-scaffold/    (domain — mature, has references)
+└── s-harness-protocol/        (meta — good foundation, needs modernization)
 ```
 
 **Gaps identified:**
@@ -94,7 +94,7 @@ skills/
 - No frontend/design system skill
 - No documentation scaffolding skill
 - No "bootstrap a new codebase" setup skill
-- No code review skill (relying on bundled `/code-review`)
+- No code review skill (relying on bundled `/s-code-review`)
 - No architecture decision record skill
 - No self-updating feedback loop (agents struggle but don't improve the harness)
 - Harness protocol is over-constrained for new model generation
@@ -107,7 +107,7 @@ skills/
 
 ### Phase 1: Foundation (Setup & Scaffold)
 
-#### 1.1 `codebase-setup` (Priority: HIGH)
+#### 1.1 `s-codebase-setup` (Priority: HIGH)
 
 The "day zero" skill. Bootstraps a new or existing codebase with the full harness scaffold.
 
@@ -128,7 +128,7 @@ The "day zero" skill. Bootstraps a new or existing codebase with the full harnes
 - Should offer a "minimal" and "full" mode based on repo size
 - Reference: harness-protocol scaffold definition
 
-#### 1.2 `plan` (Priority: HIGH)
+#### 1.2 `s-plan` (Priority: HIGH)
 
 Consistent planning skill that produces the same plan format regardless of which agent (Claude, Codex, Cursor) is executing. Inspired by mattpocock/skills' `wayfinder` and `to-tickets` but adapted to our preferred Claude-style approach.
 
@@ -166,13 +166,13 @@ Consistent planning skill that produces the same plan format regardless of which
 ```
 
 **Design notes:**
-- Should support both user-invoked (`/plan`) and model-invoked (agent decides to plan before a complex task)
+- Should support both user-invoked (`/s-plan`) and model-invoked (agent decides to plan before a complex task)
 - Plans go in `docs/exec-plans/active/` and move to `completed/` when done
 - Integrates with tracer-bullet thinking from mattpocock/skills: break work into vertical slices that are independently completable and demoable
 - Unlike wayfinder, our plans don't live on an issue tracker — they live in the repo alongside the code
 - The skill should also handle plan updates: when the approach changes mid-execution, update the plan document rather than abandoning it
 
-#### 1.3 `harness-protocol` (MODERNIZE existing)
+#### 1.3 `s-harness-protocol` (MODERNIZE existing)
 
 Update the existing protocol to align with new model guidance:
 
@@ -187,7 +187,7 @@ Update the existing protocol to align with new model guidance:
 
 ### Phase 2: Quality & Verification
 
-#### 2.1 `test-strategy` (Priority: HIGH)
+#### 2.1 `s-test-strategy` (Priority: HIGH)
 
 Guides agents on testing decisions rather than prescribing test patterns.
 
@@ -202,7 +202,7 @@ Guides agents on testing decisions rather than prescribing test patterns.
 - Should include a `reference/rubric.md` defining quality thresholds
 - Should define when to use mocks vs real dependencies (decision framework, not rule)
 
-#### 2.2 `security-review` (Priority: HIGH)
+#### 2.2 `s-security-review` (Priority: HIGH)
 
 Structured security assessment skill with adversarial verification.
 
@@ -217,9 +217,9 @@ Structured security assessment skill with adversarial verification.
 - Should define a compact trust boundary model the agent can reference
 - Verification: findings should be adversarially checked (can the agent reproduce the vulnerability path?)
 
-#### 2.3 `code-review` (Priority: MEDIUM)
+#### 2.3 `s-code-review` (Priority: MEDIUM)
 
-Custom code review skill that overrides the bundled `/code-review`.
+Custom code review skill that overrides the bundled `/s-code-review`.
 
 **What it does:**
 - Defines team-specific review dimensions (beyond the bundled generic review)
@@ -232,7 +232,7 @@ Custom code review skill that overrides the bundled `/code-review`.
 - Should be lean — the bundled skill handles mechanics; this adds team taste
 - Reference the Anthropic guidance: "A reviewer prompted to find gaps will always report some... tell it to flag only gaps that affect correctness"
 
-#### 2.4 `tech-debt-audit` (Priority: MEDIUM)
+#### 2.4 `s-tech-debt-audit` (Priority: MEDIUM)
 
 Dedicated skill for the technical debt protocol (currently embedded in harness-protocol).
 
@@ -250,7 +250,7 @@ Dedicated skill for the technical debt protocol (currently embedded in harness-p
 
 ### Phase 3: Architecture & Design
 
-#### 3.1 `frontend-design` (Priority: HIGH)
+#### 3.1 `s-frontend-design` (Priority: HIGH)
 
 Frontend architecture and design system guidance.
 
@@ -266,7 +266,7 @@ Frontend architecture and design system guidance.
 - Rubric-based: "here's what good UI looks like in this project" rather than rules
 - Per Claude 5 guidance: prefer code references and HTML mockups over descriptions
 
-#### 3.2 `architecture-decision` (Priority: MEDIUM)
+#### 3.2 `s-architecture-decision` (Priority: MEDIUM)
 
 Guides creation of Architecture Decision Records (ADRs).
 
@@ -280,7 +280,7 @@ Guides creation of Architecture Decision Records (ADRs).
 - Lightweight — the format is the value, not extensive guidance
 - Should define: context, decision, consequences, status lifecycle
 
-#### 3.3 GCP Skills Suite (SPLIT from existing monolithic `gcp-project-scaffold`)
+#### 3.3 GCP Skills Suite (SPLIT from existing monolithic `s-gcp-project-scaffold`)
 
 The current skill is 460 lines covering 6 distinct concerns. Split into focused sub-skills with their own triggers. This is our house architecture going forward — the content stays, the organization improves.
 
@@ -288,17 +288,17 @@ The current skill is 460 lines covering 6 distinct concerns. Split into focused 
 
 | New Skill | Trigger | Content (from current skill) |
 |-----------|---------|------------------------------|
-| `gcp-architecture` | Starting a new GCP project, choosing surfaces, designing system shape | Core principles, system shape diagram, surface roles table |
-| `gcp-deploy` | First deploy, bootstrap, deploy.sh creation, credential setup | First-deploy operating contract, scaffolding checklist, credential stores, secret handling, **NEW: deploy.sh pattern** |
-| `gcp-buildpacks` | Setting up a deployable surface, Procfile questions, Dockerfile alternatives | No-Dockerfile technique, frontend sub-technique, staged context rules |
-| `gcp-cicd` | Setting up CI/CD, Cloud Build triggers, pipeline troubleshooting | CI/CD pipeline section, Cloud Build YAML guardrails, GitHub triggers, static scans |
-| `gcp-triage` | Build failures, deploy failures, log retrieval, Terraform validation | Failure triage section, log commands, Terraform validation |
+| `s-gcp-architecture` | Starting a new GCP project, choosing surfaces, designing system shape | Core principles, system shape diagram, surface roles table |
+| `s-gcp-deploy` | First deploy, bootstrap, deploy.sh creation, credential setup | First-deploy operating contract, scaffolding checklist, credential stores, secret handling, **NEW: deploy.sh pattern** |
+| `s-gcp-buildpacks` | Setting up a deployable surface, Procfile questions, Dockerfile alternatives | No-Dockerfile technique, frontend sub-technique, staged context rules |
+| `s-gcp-cicd` | Setting up CI/CD, Cloud Build triggers, pipeline troubleshooting | CI/CD pipeline section, Cloud Build YAML guardrails, GitHub triggers, static scans |
+| `s-gcp-triage` | Build failures, deploy failures, log retrieval, Terraform validation | Failure triage section, log commands, Terraform validation |
 
 **Shared reference files** stay in a common location accessible to all GCP skills. Options:
 - Each sub-skill gets its own `reference/` with only the files it needs
 - Or a shared `skills/gcp-shared/reference/` that all GCP skills point to
 
-**NEW: `deploy.sh` pattern (lives in `gcp-deploy`):**
+**NEW: `deploy.sh` pattern (lives in `s-gcp-deploy`):**
 
 The `deploy.sh` script is a single idempotent entry point that wraps the entire deployment lifecycle:
 
@@ -318,18 +318,18 @@ Design principles for deploy.sh:
 - Fails fast with actionable error messages, not silent failures
 - Should be the ONLY thing an operator needs to run after code changes
 
-The `gcp-deploy` skill should include a `reference/deploy-sh-template.sh` that agents use as a starting point when scaffolding new projects.
+The `s-gcp-deploy` skill should include a `reference/deploy-sh-template.sh` that agents use as a starting point when scaffolding new projects.
 
 **Evolution notes:**
 - Each sub-skill should be rewritten in decision-framework style (not 460 lines of procedure)
-- No separate generic `ci-pipeline` skill needed — `gcp-cicd` owns this for our stack
+- No separate generic `ci-pipeline` skill needed — `s-gcp-cicd` owns this for our stack
 - If we ever need non-GCP CI (GitHub Actions for other platforms), add that as a separate skill at that time
 
 ---
 
 ### Phase 4: Operations & Automation
 
-#### 4.1 `harness-evolution` (Priority: HIGH)
+#### 4.1 `s-harness-evolution` (Priority: HIGH)
 
 The self-updating harness skill. Builds a continuous feedback loop where agent struggles become harness improvements.
 
@@ -356,7 +356,7 @@ The self-updating harness skill. Builds a continuous feedback loop where agent s
 **Suggested fix:** [optional — agent's idea for improvement]
 ```
 
-#### 4.2 `documentation-scaffold` (Priority: MEDIUM)
+#### 4.2 `s-documentation-scaffold` (Priority: MEDIUM)
 
 Ongoing documentation maintenance (distinct from initial setup).
 
@@ -367,11 +367,11 @@ Ongoing documentation maintenance (distinct from initial setup).
 - Detects documentation drift from code
 
 **Design notes:**
-- NOT for initial scaffold creation (that's `codebase-setup`)
+- NOT for initial scaffold creation (that's `s-codebase-setup`)
 - For ongoing: "I just made a change, what docs need updating?"
 - Should define when generated docs (schemas, API inventories) need regeneration
 
-#### 4.3 `release-workflow` (Priority: LOW)
+#### 4.3 `s-release-workflow` (Priority: LOW)
 
 Release process guidance.
 
@@ -419,26 +419,26 @@ Saved workflow scripts (`.claude/workflows/`) for common multi-agent patterns:
 
 ```
 Phase 1 (Foundation)     ─── Week 1-2
-  ├── 1.1 codebase-setup
-  ├── 1.2 plan (consistent planning skill)
-  └── 1.3 harness-protocol modernization
+  ├── 1.1 s-codebase-setup
+  ├── 1.2 s-plan (consistent planning skill)
+  └── 1.3 s-harness-protocol modernization
 
 Phase 2 (Quality)        ─── Week 2-3
-  ├── 2.1 test-strategy
-  ├── 2.2 security-review
-  ├── 2.3 code-review
-  └── 2.4 tech-debt-audit
+  ├── 2.1 s-test-strategy
+  ├── 2.2 s-security-review
+  ├── 2.3 s-code-review
+  └── 2.4 s-tech-debt-audit
 
 Phase 3 (Architecture)   ─── Week 3-4
-  ├── 3.1 frontend-design
-  ├── 3.2 architecture-decision
-  └── 3.3 GCP split (gcp-architecture, gcp-deploy + deploy.sh,
-          gcp-buildpacks, gcp-cicd, gcp-triage)
+  ├── 3.1 s-frontend-design
+  ├── 3.2 s-architecture-decision
+  └── 3.3 GCP split (s-gcp-architecture, s-gcp-deploy + deploy.sh,
+          s-gcp-buildpacks, s-gcp-cicd, s-gcp-triage)
 
 Phase 4 (Operations)     ─── Week 4-5
-  ├── 4.1 harness-evolution (self-updating feedback loop)
-  ├── 4.2 documentation-scaffold
-  └── 4.3 release-workflow
+  ├── 4.1 s-harness-evolution (self-updating feedback loop)
+  ├── 4.2 s-documentation-scaffold
+  └── 4.3 s-release-workflow
 
 Phase 5 (Orchestration)  ─── Week 5-6
   ├── 5.1 Subagent definitions
@@ -465,68 +465,68 @@ shared-skills/
 │       ├── gpt56-prompting-guide.md       # Captured guidance
 │       └── agent-skills-standard.md       # Standard reference
 ├── skills/
-│   ├── codebase-setup/
+│   ├── s-codebase-setup/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       ├── claude-md-template.md      # Primary — all guidance lives here
 │   │       ├── architecture-md-template.md
 │   │       └── minimal-scaffold.md
-│   ├── plan/
+│   ├── s-plan/
 │   │   └── SKILL.md                   # NEW: consistent planning across agents
-│   ├── harness-protocol/
+│   ├── s-harness-protocol/
 │   │   └── SKILL.md                   # MODERNIZED
-│   ├── test-strategy/
+│   ├── s-test-strategy/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       └── quality-rubric.md
-│   ├── security-review/
+│   ├── s-security-review/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       ├── threat-model-template.md
 │   │       └── owasp-dimensions.md
-│   ├── code-review/
+│   ├── s-code-review/
 │   │   └── SKILL.md
-│   ├── tech-debt-audit/
+│   ├── s-tech-debt-audit/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       └── tracker-format.md
-│   ├── frontend-design/
+│   ├── s-frontend-design/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       ├── component-patterns.md
 │   │       └── accessibility-rubric.md
-│   ├── architecture-decision/
+│   ├── s-architecture-decision/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       └── adr-template.md
-│   ├── harness-evolution/
+│   ├── s-harness-evolution/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       └── feedback-format.md
-│   ├── documentation-scaffold/
+│   ├── s-documentation-scaffold/
 │   │   └── SKILL.md
-│   ├── release-workflow/
+│   ├── s-release-workflow/
 │   │   └── SKILL.md
-│   ├── gcp-architecture/             # SPLIT from gcp-project-scaffold
+│   ├── s-gcp-architecture/             # SPLIT from gcp-project-scaffold
 │   │   └── SKILL.md
-│   ├── gcp-deploy/
+│   ├── s-gcp-deploy/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       └── deploy-sh-template.sh
-│   ├── gcp-buildpacks/
+│   ├── s-gcp-buildpacks/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       ├── Procfile
 │   │       └── requirements-stdlib-only.txt
-│   ├── gcp-cicd/
+│   ├── s-gcp-cicd/
 │   │   ├── SKILL.md
 │   │   └── reference/
 │   │       ├── cloudbuild-service.yaml
 │   │       ├── cloudbuild-job.yaml
 │   │       └── create-triggers.sh
-│   ├── gcp-triage/
+│   ├── s-gcp-triage/
 │   │   └── SKILL.md
-│   ├── change-vscode-color/          # EXISTING
+│   ├── s-change-vscode-color/          # EXISTING
 │   │   └── SKILL.md
 │   └── dataviz/                       # EXISTING (personal)
 │       └── SKILL.md
@@ -612,12 +612,12 @@ This repo (194k stars) has strong patterns we should selectively adopt:
 
 **Adopt directly:**
 - AGENTS.md pointing to CLAUDE.md (single source of truth, zero maintenance)
-- Tracer-bullet ticket thinking: break work into vertical slices that cut through all layers, independently completable and demoable — inform our `plan` skill
-- Two-axis code review: Standards vs. Spec as separate concerns — inform our `code-review` skill
+- Tracer-bullet ticket thinking: break work into vertical slices that cut through all layers, independently completable and demoable — inform our `s-plan` skill
+- Two-axis code review: Standards vs. Spec as separate concerns — inform our `s-code-review` skill
 - Handoff documents: compact a conversation into a resumable artifact — useful for our multi-session workflows
 
 **Adapt (don't copy):**
-- Wayfinder's "decision map" concept: good for foggy work, but we prefer plans as repo documents not issue tracker tickets. Our `plan` skill captures the spirit (break unknowns into resolvable questions) without the issue-tracker coupling.
+- Wayfinder's "decision map" concept: good for foggy work, but we prefer plans as repo documents not issue tracker tickets. Our `s-plan` skill captures the spirit (break unknowns into resolvable questions) without the issue-tracker coupling.
 - CONTEXT.md / domain lexicon: their idea of a shared vocabulary file reducing verbosity. For us, this belongs inside CLAUDE.md's project description rather than a separate file.
 - Grilling sessions: their "interview the user until alignment is reached" pattern. Good concept; for us this is a technique agents should use naturally (via AskUserQuestion) rather than a separate skill.
 - Router skill (ask-matt): they use a central router that maps requests to skills. We don't need this — Claude Code's description-based skill discovery handles routing.
@@ -643,8 +643,8 @@ The existing `harness-protocol/SKILL.md` is 166 lines of detailed procedure. Per
 - Keep: harness engineering principles (maps over manuals, executable checks, progressive disclosure)
 - Keep: the concept of agent failure = missing harness
 - Add: instruction to log friction points for harness-evolution feedback loop
-- Extract: technical debt protocol → `tech-debt-audit` skill
-- Extract: scaffold definition → `codebase-setup` skill
+- Extract: technical debt protocol → `s-tech-debt-audit` skill
+- Extract: scaffold definition → `s-codebase-setup` skill
 - Simplify: work loop → compact decision framework, not numbered steps
 - Add: compact autonomy policy (what's safe to do vs. what needs confirmation)
 - Update: replace AGENTS.md-centric language with CLAUDE.md-as-canonical approach
@@ -655,7 +655,7 @@ The existing `harness-protocol/SKILL.md` is 166 lines of detailed procedure. Per
 
 Each phase should be verified before moving to the next:
 
-1. **Phase 1 verification:** Run `codebase-setup` on a test repo and confirm it produces a usable scaffold (CLAUDE.md + AGENTS.md symlink). Run `/plan` on a real task and confirm both Claude and Codex produce the same plan format. Run `/harness-protocol` and confirm it loads cleanly without over-constraining.
+1. **Phase 1 verification:** Run `s-codebase-setup` on a test repo and confirm it produces a usable scaffold (CLAUDE.md + AGENTS.md symlink). Run `/s-plan` on a real task and confirm both Claude and Codex produce the same plan format. Run `/s-harness-protocol` and confirm it loads cleanly without over-constraining.
 2. **Phase 2 verification:** Run each quality skill against a real codebase change. Confirm findings are actionable, not noise.
 3. **Phase 3 verification:** Run frontend/architecture skills and confirm they produce decision-useful output (not generic advice).
 4. **Phase 4 verification:** Run CI/docs skills in a project with existing pipelines. Confirm they integrate rather than conflict.
@@ -677,7 +677,7 @@ Each phase should be verified before moving to the next:
 
 This plan is complete when:
 
-1. A new codebase can be bootstrapped with `/codebase-setup` and have full agent operational context (CLAUDE.md as canonical, AGENTS.md as redirect)
+1. A new codebase can be bootstrapped with `/s-codebase-setup` and have full agent operational context (CLAUDE.md as canonical, AGENTS.md as redirect)
 2. Every skill in the suite follows the modern prompting principles (judgment over constraints)
 3. Skills are portable across Claude Code, Cursor, Codex, and Gemini CLI via Agent Skills standard
 4. Quality skills (test, security, review, debt) produce actionable findings with adversarial verification

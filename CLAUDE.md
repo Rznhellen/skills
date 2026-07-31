@@ -11,7 +11,7 @@ This is a portable agent harness — a collection of skills, subagents, and work
 
 ## Skill Design
 
-Skills live in `skills/<name>/SKILL.md` with optional `reference/` subdirectories. The `description` field in frontmatter controls discovery — write it as a specific trigger condition.
+Skills live in `skills/s-<name>/SKILL.md` with optional `reference/` subdirectories. The `description` field in frontmatter controls discovery — write it as a specific trigger condition.
 
 Keep SKILL.md under 100 lines. Push detailed specs into `reference/`. State each instruction once. Use decision frameworks over procedures.
 
